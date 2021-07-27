@@ -3,13 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Episodio;
+use App\Events\NovaSerie as EventsNovaSerie;
 use App\Http\Requests\SeriesFormRequest;
+use App\Mail\NovaSerie;
 use App\Serie;
 use App\Services\CriadorDeSerie;
 use App\Services\RemovedorDeSerie;
 use App\Temporada;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class SeriesController extends Controller
 {
@@ -42,6 +46,9 @@ class SeriesController extends Controller
     function store(SeriesFormRequest $request,CriadorDeSerie $criadorDeSerie)
     {
         $serie = $criadorDeSerie->criarSerie($request->nome,$request->qtd_temporadas,$request->ep_por_temporada);
+
+        $eventoNovaSerie = new EventsNovaSerie($request->nome,$request->qtd_temporadas,$request->ep_por_temporada);
+        event($eventoNovaSerie);
 
         $request->session()->flash('mensagem',"Série, temporadas e episódios criados com sucesso!");
         return redirect('/series');
