@@ -45,7 +45,12 @@ class SeriesController extends Controller
     }
     function store(SeriesFormRequest $request,CriadorDeSerie $criadorDeSerie)
     {
-        $serie = $criadorDeSerie->criarSerie($request->nome,$request->qtd_temporadas,$request->ep_por_temporada);
+        $serie = $criadorDeSerie->criarSerie($request->nome,$request->qtd_temporadas,$request->ep_por_temporada,$request->capa);
+        if($request->hasFile('capa'))
+        {
+            $serie->capa = $request->file('capa')->store('serie');
+            $serie->save();
+        }
 
         $eventoNovaSerie = new EventsNovaSerie($request->nome,$request->qtd_temporadas,$request->ep_por_temporada);
         event($eventoNovaSerie);

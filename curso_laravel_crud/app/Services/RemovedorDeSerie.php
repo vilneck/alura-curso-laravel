@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\{Serie,Temporada,Episodio};
+use Illuminate\Support\Facades\Storage;
 
 class RemovedorDeSerie
 {
@@ -17,6 +18,11 @@ class RemovedorDeSerie
 
         });
         $serie->delete();
+
+        if($serie->capa)
+        {
+            Storage::delete($serie->capa);
+        }
 
         return $nomeSerie;
     }
